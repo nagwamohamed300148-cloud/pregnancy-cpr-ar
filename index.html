@@ -1,31 +1,49 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Pregnancy CPR | Skill 01 AR</title>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pregnancy CPR | Skill 01 AR</title>
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;background:#071526;color:white;font:15px Arial,sans-serif}.panel{position:fixed;z-index:10;left:10px;right:10px;background:rgba(5,24,44,.92);border:1px solid #39c9e9;border-radius:12px;padding:12px;box-shadow:0 3px 18px #0007}header{top:10px}header strong{display:block;font-size:16px}header small{color:#b5eafa}.bottom{bottom:12px}#step{font-weight:bold;margin-bottom:5px}#detail{font-size:13px;line-height:1.35;color:#d5e9f3;min-height:35px}#status{font-size:12px;color:#9fe5f5;margin-top:5px}.buttons{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}button{flex:1;min-width:74px;padding:10px 5px;border:0;border-radius:8px;background:#14b9dc;color:#041725;font-weight:bold}button:disabled{opacity:.4}button.secondary{background:#d6eaf2}#notice{position:fixed;top:90px;left:15px;right:15px;text-align:center;color:#fff;text-shadow:0 1px 4px #000;z-index:5;pointer-events:none}a-scene{position:fixed!important;inset:0!important}</style>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071526;color:white;font:15px Arial,sans-serif}
+.panel{position:fixed;z-index:20;left:12px;right:12px;background:rgba(5,24,44,.93);border:1px solid #39c9e9;border-radius:13px;padding:12px;box-shadow:0 3px 18px #0007}
+header{top:calc(12px + env(safe-area-inset-top))}header strong{display:block;font-size:16px}header small{display:block;margin-top:5px;color:#b5eafa}#status{font-size:12px;color:#9fe5f5;margin-top:8px}
+.bottom{bottom:calc(12px + env(safe-area-inset-bottom))}#step{font-weight:bold;margin-bottom:6px}#detail{font-size:13px;line-height:1.4;color:#d5e9f3;min-height:35px}.buttons{display:flex;gap:7px;margin-top:10px}button{flex:1;min-width:0;padding:11px 4px;border:0;border-radius:8px;background:#14b9dc;color:#041725;font-weight:bold}button:disabled{opacity:.4}button.secondary{background:#d6eaf2}
+#notice{position:fixed;top:145px;left:12px;right:12px;text-align:center;color:#fff;text-shadow:0 2px 5px #000;z-index:15;pointer-events:none;font-size:13px}
+a-scene{position:fixed!important;inset:0!important;width:100%!important;height:100%!important}
+</style>
 <script>
-AFRAME.registerComponent('pulse-heart',{tick:function(t){const s=1+.08*Math.sin(t/210);this.el.object3D.scale.set(s,s,s)}});
-</script></head><body>
-<header class="panel"><strong>PREGNANCY CPR · AR CLINICAL TRAINING</strong><small>Skill 01 — Pre-Procedure Activities</small><div id="status">Initializing camera…</div></header>
-<div id="notice">Point your camera at the printed Skill 01 marker</div>
-<div class="panel bottom"><div id="step">1/6 — Ensure scene safety</div><div id="detail">Check for environmental hazards before approaching the patient.</div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide anatomy</button></div></div>
-<a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes" color-space="sRGB" renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
-<a-assets></a-assets><a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+AFRAME.registerComponent('pulse-heart',{
+ init:function(){this.baseScale=this.el.object3D.scale.clone()},
+ tick:function(t){if(!this.baseScale)return;const s=1+.07*Math.sin(t/240);this.el.object3D.scale.copy(this.baseScale).multiplyScalar(s)}
+});
+</script>
+</head>
+<body>
+<header class="panel"><strong>PREGNANCY CPR · AR CLINICAL TRAINING</strong><small>Skill 01 — Pre-Procedure Activities</small><div id="status">Loading AR…</div></header>
+<div id="notice">Point camera at the exact Skill 01 image used to create targets.mind</div>
+<div class="panel bottom"><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide anatomy</button></div></div>
+<a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes" color-space="sRGB" renderer="colorManagement: true; antialias: true; alpha: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
+<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 <a-entity id="target" mindar-image-target="targetIndex: 0">
-<!-- Schematic 3D torso and organ landmarks: teaching prototype, not anatomically validated. -->
-<a-entity position="0 0 0" rotation="-12 0 0" scale="0.9 0.9 0.9">
-<a-entity id="bodyLayer"><a-sphere position="0 0.02 0" scale="0.49 0.72 0.28" material="color:#d9ad91;transparent:true;opacity:0.26;side:double"></a-sphere><a-sphere position="0 -0.28 0.12" scale="0.49 0.40 0.37" material="color:#e2b8a1;transparent:true;opacity:0.27"></a-sphere></a-entity>
+<!-- High-contrast diagnostic geometry, intentionally in front of the tracked image. -->
+<a-box id="testBox" position="0 0 0.35" width="0.24" height="0.24" depth="0.24" color="#00ff7f" animation="property: rotation; to: 0 360 0; loop: true; dur: 3500; easing: linear"></a-box>
+<a-entity id="model" position="0 0 0.12" scale="0.72 0.72 0.72">
+<a-sphere position="0 -0.05 0" scale="0.45 0.64 0.22" material="color:#d9ad91;transparent:true;opacity:0.24;side:double;depthWrite:false"></a-sphere>
+<a-sphere position="0 -0.34 0.08" scale="0.44 0.33 0.30" material="color:#e2b8a1;transparent:true;opacity:0.24;side:double;depthWrite:false"></a-sphere>
 <a-entity id="organs">
-<a-sphere position="-0.17 0.20 0.10" scale="0.18 0.29 0.13" material="color:#f5a5b9;roughness:0.5"></a-sphere>
-<a-sphere position="0.17 0.20 0.10" scale="0.18 0.29 0.13" material="color:#f5a5b9;roughness:0.5"></a-sphere>
-<a-sphere pulse-heart position="0.035 0.17 0.26" scale="0.115 0.15 0.095" material="color:#d6264c"></a-sphere>
-<a-torus position="0 -0.06 0.13" radius="0.32" radius-tubular="0.018" rotation="75 0 0" material="color:#f3d49d"></a-torus>
-<a-sphere position="0 -0.31 0.17" scale="0.37 0.31 0.27" material="color:#a94464;transparent:true;opacity:0.75"></a-sphere>
-<a-sphere position="0.045 -0.33 0.35" scale="0.14 0.18 0.095" material="color:#eab49a"></a-sphere>
+<a-sphere position="-0.16 0.17 0.18" scale="0.15 0.24 0.12" color="#f4a3c2"></a-sphere>
+<a-sphere position="0.16 0.17 0.18" scale="0.15 0.24 0.12" color="#f4a3c2"></a-sphere>
+<a-sphere id="heart" pulse-heart position="0.03 0.14 0.34" scale="0.10 0.13 0.09" color="#df2247"></a-sphere>
+<a-sphere position="0 -0.35 0.23" scale="0.32 0.25 0.20" color="#a94464"></a-sphere>
+<a-sphere position="0.03 -0.37 0.43" scale="0.11 0.14 0.07" color="#f5c7a4"></a-sphere>
 </a-entity>
-<a-text value="SCHEMATIC ANATOMY" position="0 0.78 0" align="center" width="1.7" color="#ffffff" side="double"></a-text>
-<a-text value="HEART / LUNGS / UTERUS" position="0 -0.79 0" align="center" width="1.6" color="#ffffff" side="double"></a-text>
-</a-entity></a-entity></a-scene>
+</a-entity>
+<a-text value="3D TRACKING TEST" position="0 0.47 0.25" width="1.65" align="center" color="#00ff7f" side="double"></a-text>
+<a-text value="SCHEMATIC ONLY" position="0 -0.47 0.25" width="1.6" align="center" color="#ffffff" side="double"></a-text>
+</a-entity>
+</a-scene>
 <script>
 const steps=[
 ['Ensure scene safety','Check for environmental hazards before approaching the patient.'],
@@ -33,9 +51,17 @@ const steps=[
 ['Assess responsiveness','Tap the patient’s shoulders and ask loudly: “Are you okay?”'],
 ['Call for immediate help','Recognize unresponsiveness and summon nearby assistance promptly.'],
 ['Verify identity and readiness','Verify patient identity when feasible and assess maternal resuscitation readiness without delaying emergency response.'],
-['Position yourself for CPR','Move alongside the patient, ready to begin the next indicated resuscitation actions.']];
-let idx=0,visible=true;const $=id=>document.getElementById(id);
-function render(){ $('step').textContent=`${idx+1}/6 — ${steps[idx][0]}`;$('detail').textContent=steps[idx][1];$('prev').disabled=idx===0;$('next').disabled=idx===5;$('anatomy').textContent=visible?'Hide anatomy':'Show anatomy';}
+['Position yourself for CPR','Move alongside the patient, ready to begin the next indicated resuscitation actions.']
+];
+let idx=0,visible=true,tracked=false;const $=id=>document.getElementById(id);
+function render(){$('step').textContent=`${idx+1}/6 — ${steps[idx][0]}`;$('detail').textContent=steps[idx][1];$('prev').disabled=idx===0;$('next').disabled=idx===5;$('anatomy').textContent=visible?'Hide anatomy':'Show anatomy'}
 $('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};$('next').onclick=()=>{idx=Math.min(5,idx+1);render()};$('anatomy').onclick=()=>{visible=!visible;$('organs').setAttribute('visible',visible);render()};render();
-const scene=document.querySelector('a-scene');scene.addEventListener('arReady',()=>{$('status').textContent='Camera ready — scan Skill 01 marker'});scene.addEventListener('arError',()=>{$('status').textContent='Camera or tracking error — check permissions and HTTPS'});$('target').addEventListener('targetFound',()=>{$('notice').textContent='Marker detected — 3D training active';$('status').textContent='Tracking marker'});$('target').addEventListener('targetLost',()=>{$('notice').textContent='Point your camera at the printed Skill 01 marker';$('status').textContent='Marker not in view'});
-</script></body></html>
+const scene=document.querySelector('a-scene');
+scene.addEventListener('loaded',()=>{$('status').textContent='3D scene loaded — starting camera…'});
+scene.addEventListener('arReady',()=>{$('status').textContent='Camera ready — scan Skill 01 marker'});
+scene.addEventListener('arError',()=>{$('status').textContent='AR ERROR — camera, network, or tracking issue'});
+$('target').addEventListener('targetFound',()=>{tracked=true;$('notice').textContent='Marker detected — look for GREEN ROTATING CUBE';$('status').textContent='Marker detected — 3D test active';});
+$('target').addEventListener('targetLost',()=>{tracked=false;$('notice').textContent='Point camera at Skill 01 marker';$('status').textContent='Marker not in view';});
+window.addEventListener('error',e=>{$('status').textContent='PAGE ERROR: '+String(e.message).slice(0,90)});
+</script>
+</body></html>
