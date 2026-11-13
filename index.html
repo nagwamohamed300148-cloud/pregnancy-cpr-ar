@@ -1,30 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Pregnancy CPR | AR Practice</title>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Pregnancy CPR | Skill 01 AR</title>
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-<style>
-body{margin:0;overflow:hidden;font-family:Arial,sans-serif}
-#banner{position:fixed;top:0;left:0;right:0;background:rgba(11,29,45,.9);color:white;padding:12px;text-align:center;z-index:9;font-size:14px}
-#help{position:fixed;bottom:12px;left:10px;right:10px;background:rgba(255,255,255,.93);padding:10px;border-radius:8px;text-align:center;z-index:9;font-size:13px}
-</style>
-</head>
-<body>
-<div id="banner">Pregnancy CPR — AR Training Prototype</div>
-<div id="help">Allow camera access and point your phone at the printed HIRO marker. This is a visual technology test, not a clinical CPR demonstration.</div>
-<a-scene embedded vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true; precision: medium" arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
-<a-marker preset="hiro" emitevents="true">
-<!-- Simple placeholder to verify marker tracking. Replace with validated medical GLB later. -->
-<a-entity id="placeholder" position="0 0.35 0">
-<a-cylinder position="0 0.12 0" radius="0.26" height="0.5" color="#E8BCA5"></a-cylinder>
-<a-sphere position="0 0.49 0" radius="0.19" color="#E8BCA5"></a-sphere>
-<a-sphere position="0 0.03 0.24" radius="0.22" color="#DCA88F"></a-sphere>
-<a-text value="AR tracking works" align="center" position="0 0.85 0" rotation="-90 0 0" width="2.5" color="#142E44"></a-text>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;background:#071526;color:white;font:15px Arial,sans-serif}.panel{position:fixed;z-index:10;left:10px;right:10px;background:rgba(5,24,44,.92);border:1px solid #39c9e9;border-radius:12px;padding:12px;box-shadow:0 3px 18px #0007}header{top:10px}header strong{display:block;font-size:16px}header small{color:#b5eafa}.bottom{bottom:12px}#step{font-weight:bold;margin-bottom:5px}#detail{font-size:13px;line-height:1.35;color:#d5e9f3;min-height:35px}#status{font-size:12px;color:#9fe5f5;margin-top:5px}.buttons{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}button{flex:1;min-width:74px;padding:10px 5px;border:0;border-radius:8px;background:#14b9dc;color:#041725;font-weight:bold}button:disabled{opacity:.4}button.secondary{background:#d6eaf2}#notice{position:fixed;top:90px;left:15px;right:15px;text-align:center;color:#fff;text-shadow:0 1px 4px #000;z-index:5;pointer-events:none}a-scene{position:fixed!important;inset:0!important}</style>
+<script>
+AFRAME.registerComponent('pulse-heart',{tick:function(t){const s=1+.08*Math.sin(t/210);this.el.object3D.scale.set(s,s,s)}});
+</script></head><body>
+<header class="panel"><strong>PREGNANCY CPR · AR CLINICAL TRAINING</strong><small>Skill 01 — Pre-Procedure Activities</small><div id="status">Initializing camera…</div></header>
+<div id="notice">Point your camera at the printed Skill 01 marker</div>
+<div class="panel bottom"><div id="step">1/6 — Ensure scene safety</div><div id="detail">Check for environmental hazards before approaching the patient.</div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide anatomy</button></div></div>
+<a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes" color-space="sRGB" renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
+<a-assets></a-assets><a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+<a-entity id="target" mindar-image-target="targetIndex: 0">
+<!-- Schematic 3D torso and organ landmarks: teaching prototype, not anatomically validated. -->
+<a-entity position="0 0 0" rotation="-12 0 0" scale="0.9 0.9 0.9">
+<a-entity id="bodyLayer"><a-sphere position="0 0.02 0" scale="0.49 0.72 0.28" material="color:#d9ad91;transparent:true;opacity:0.26;side:double"></a-sphere><a-sphere position="0 -0.28 0.12" scale="0.49 0.40 0.37" material="color:#e2b8a1;transparent:true;opacity:0.27"></a-sphere></a-entity>
+<a-entity id="organs">
+<a-sphere position="-0.17 0.20 0.10" scale="0.18 0.29 0.13" material="color:#f5a5b9;roughness:0.5"></a-sphere>
+<a-sphere position="0.17 0.20 0.10" scale="0.18 0.29 0.13" material="color:#f5a5b9;roughness:0.5"></a-sphere>
+<a-sphere pulse-heart position="0.035 0.17 0.26" scale="0.115 0.15 0.095" material="color:#d6264c"></a-sphere>
+<a-torus position="0 -0.06 0.13" radius="0.32" radius-tubular="0.018" rotation="75 0 0" material="color:#f3d49d"></a-torus>
+<a-sphere position="0 -0.31 0.17" scale="0.37 0.31 0.27" material="color:#a94464;transparent:true;opacity:0.75"></a-sphere>
+<a-sphere position="0.045 -0.33 0.35" scale="0.14 0.18 0.095" material="color:#eab49a"></a-sphere>
 </a-entity>
-<!-- Once you have an approved model, place mannequin.glb next to index.html and replace the placeholder entity above with: <a-entity gltf-model="url(mannequin.glb)" position="0 0 0" scale="0.5 0.5 0.5"></a-entity> -->
-</a-marker>
-<a-entity camera></a-entity>
-</a-scene>
-</body></html>
+<a-text value="SCHEMATIC ANATOMY" position="0 0.78 0" align="center" width="1.7" color="#ffffff" side="double"></a-text>
+<a-text value="HEART / LUNGS / UTERUS" position="0 -0.79 0" align="center" width="1.6" color="#ffffff" side="double"></a-text>
+</a-entity></a-entity></a-scene>
+<script>
+const steps=[
+['Ensure scene safety','Check for environmental hazards before approaching the patient.'],
+['Wear PPE','Put on appropriate personal protective equipment and barriers.'],
+['Assess responsiveness','Tap the patient’s shoulders and ask loudly: “Are you okay?”'],
+['Call for immediate help','Recognize unresponsiveness and summon nearby assistance promptly.'],
+['Verify identity and readiness','Verify patient identity when feasible and assess maternal resuscitation readiness without delaying emergency response.'],
+['Position yourself for CPR','Move alongside the patient, ready to begin the next indicated resuscitation actions.']];
+let idx=0,visible=true;const $=id=>document.getElementById(id);
+function render(){ $('step').textContent=`${idx+1}/6 — ${steps[idx][0]}`;$('detail').textContent=steps[idx][1];$('prev').disabled=idx===0;$('next').disabled=idx===5;$('anatomy').textContent=visible?'Hide anatomy':'Show anatomy';}
+$('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};$('next').onclick=()=>{idx=Math.min(5,idx+1);render()};$('anatomy').onclick=()=>{visible=!visible;$('organs').setAttribute('visible',visible);render()};render();
+const scene=document.querySelector('a-scene');scene.addEventListener('arReady',()=>{$('status').textContent='Camera ready — scan Skill 01 marker'});scene.addEventListener('arError',()=>{$('status').textContent='Camera or tracking error — check permissions and HTTPS'});$('target').addEventListener('targetFound',()=>{$('notice').textContent='Marker detected — 3D training active';$('status').textContent='Tracking marker'});$('target').addEventListener('targetLost',()=>{$('notice').textContent='Point your camera at the printed Skill 01 marker';$('status').textContent='Marker not in view'});
+</script></body></html>
