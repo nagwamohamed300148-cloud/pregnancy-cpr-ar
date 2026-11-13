@@ -27,21 +27,24 @@ AFRAME.registerComponent('pulse-heart',{
 <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes" color-space="sRGB" renderer="colorManagement: true; antialias: true; alpha: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
 <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 <a-entity id="target" mindar-image-target="targetIndex: 0">
-<!-- High-contrast diagnostic geometry, intentionally in front of the tracked image. -->
-<a-box id="testBox" position="0 0 0.35" width="0.24" height="0.24" depth="0.24" color="#00ff7f" animation="property: rotation; to: 0 360 0; loop: true; dur: 3500; easing: linear"></a-box>
-<a-entity id="model" position="0 0 0.12" scale="0.72 0.72 0.72">
-<a-sphere position="0 -0.05 0" scale="0.45 0.64 0.22" material="color:#d9ad91;transparent:true;opacity:0.24;side:double;depthWrite:false"></a-sphere>
-<a-sphere position="0 -0.34 0.08" scale="0.44 0.33 0.30" material="color:#e2b8a1;transparent:true;opacity:0.24;side:double;depthWrite:false"></a-sphere>
-<a-entity id="organs">
-<a-sphere position="-0.16 0.17 0.18" scale="0.15 0.24 0.12" color="#f4a3c2"></a-sphere>
-<a-sphere position="0.16 0.17 0.18" scale="0.15 0.24 0.12" color="#f4a3c2"></a-sphere>
-<a-sphere id="heart" pulse-heart position="0.03 0.14 0.34" scale="0.10 0.13 0.09" color="#df2247"></a-sphere>
-<a-sphere position="0 -0.35 0.23" scale="0.32 0.25 0.20" color="#a94464"></a-sphere>
-<a-sphere position="0.03 -0.37 0.43" scale="0.11 0.14 0.07" color="#f5c7a4"></a-sphere>
+<!-- Educational 3D schematic anchored to the existing Skill 01 image target. -->
+<a-entity id="model" position="0 0 0.16" scale="0.85 0.85 0.85">
+  <a-sphere position="0 -0.04 0" scale="0.43 0.67 0.19" material="color:#f1c6b5;transparent:true;opacity:0.20;side:double;depthWrite:false"></a-sphere>
+  <a-sphere position="0 -0.37 0.02" scale="0.42 0.31 0.25" material="color:#f1c6b5;transparent:true;opacity:0.18;side:double;depthWrite:false"></a-sphere>
+  <a-entity id="organs">
+    <a-cylinder position="0 0.35 0.13" radius="0.025" height="0.18" color="#e4d8bd"></a-cylinder>
+    <a-sphere position="-0.16 0.15 0.17" scale="0.15 0.25 0.10" material="color:#f4a4b9;roughness:0.65"></a-sphere>
+    <a-sphere position="0.16 0.15 0.17" scale="0.15 0.25 0.10" material="color:#f4a4b9;roughness:0.65"></a-sphere>
+    <a-sphere id="heart" pulse-heart position="0.025 0.13 0.29" scale="0.085 0.115 0.08" color="#dc3056"></a-sphere>
+    <a-sphere position="0 -0.36 0.20" scale="0.30 0.24 0.17" material="color:#a54c75;roughness:0.55"></a-sphere>
+    <a-sphere position="0.02 -0.38 0.35" scale="0.105 0.13 0.065" color="#f4c4a0"></a-sphere>
+    <a-torus position="0 0.15 0.24" radius="0.32" radius-tubular="0.006" color="#9ce9ff" opacity="0.65"></a-torus>
+  </a-entity>
+  <a-text value="LUNGS" position="-0.34 0.43 0.32" width="0.85" color="#c8f2ff" align="center" side="double"></a-text>
+  <a-text value="HEART" position="0.32 0.28 0.38" width="0.75" color="#ffe1e7" align="center" side="double"></a-text>
+  <a-text value="UTERUS" position="-0.33 -0.54 0.33" width="0.85" color="#ffd4e9" align="center" side="double"></a-text>
+  <a-text value="EDUCATIONAL SCHEMATIC" position="0 -0.75 0.25" width="1.5" align="center" color="#ffffff" side="double"></a-text>
 </a-entity>
-</a-entity>
-<a-text value="3D TRACKING TEST" position="0 0.47 0.25" width="1.65" align="center" color="#00ff7f" side="double"></a-text>
-<a-text value="SCHEMATIC ONLY" position="0 -0.47 0.25" width="1.6" align="center" color="#ffffff" side="double"></a-text>
 </a-entity>
 </a-scene>
 <script>
@@ -60,7 +63,7 @@ const scene=document.querySelector('a-scene');
 scene.addEventListener('loaded',()=>{$('status').textContent='3D scene loaded — starting camera…'});
 scene.addEventListener('arReady',()=>{$('status').textContent='Camera ready — scan Skill 01 marker'});
 scene.addEventListener('arError',()=>{$('status').textContent='AR ERROR — camera, network, or tracking issue'});
-$('target').addEventListener('targetFound',()=>{tracked=true;$('notice').textContent='Marker detected — look for GREEN ROTATING CUBE';$('status').textContent='Marker detected — 3D test active';});
+$('target').addEventListener('targetFound',()=>{tracked=true;$('notice').textContent='Marker detected — 3D schematic visible';$('status').textContent='Marker detected — anatomy schematic active';});
 $('target').addEventListener('targetLost',()=>{tracked=false;$('notice').textContent='Point camera at Skill 01 marker';$('status').textContent='Marker not in view';});
 window.addEventListener('error',e=>{$('status').textContent='PAGE ERROR: '+String(e.message).slice(0,90)});
 </script>
