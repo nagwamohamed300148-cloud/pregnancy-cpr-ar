@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Pregnancy CPR | Skill 01 AR</title>
+<title>Pregnancy CPR | Skill 01 · Visual Learning</title>
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <style>
@@ -25,6 +25,13 @@ a-scene canvas{background:transparent!important}
 .bottom,.bottom *{visibility:visible!important}
 .bottom button{position:relative;z-index:2;pointer-events:auto!important}
 @media(max-height:650px){.bottom{padding:7px!important;max-height:34vh}.bottom #detail{max-height:11vh}.bottom button{padding:8px 2px}}
+/* AR visual HUD is informational; never intercept camera gestures. */
+.visual-hud{position:fixed;z-index:30;left:50%;transform:translateX(-50%);top:calc(100px + env(safe-area-inset-top));width:min(78vw,350px);pointer-events:none;text-align:center;background:rgba(5,24,44,.76);border:1px solid rgba(89,216,235,.7);border-radius:12px;padding:7px 9px;box-shadow:0 5px 18px #0006}
+.visual-hud span{display:block;color:#8eeaff;font-size:10px;letter-spacing:2px}.visual-hud strong{display:block;font-size:12px;margin-top:3px}.visual-hud small{display:block;font-size:9px;color:#c2d9e4;margin-top:3px}
+.bottom{display:flex;flex-direction:column;overflow:hidden!important;max-height:min(37dvh,290px)!important}
+.bottom #detail{min-height:0;overflow-y:auto;max-height:none;flex:1;overscroll-behavior:contain}
+.bottom .buttons{flex-shrink:0;background:rgba(5,24,44,.95);padding-top:6px}
+.bottom .buttons button{min-height:42px}
 /* Keep the control bar above mobile browser navigation, while retaining a scrollable description. */
 @media(max-width:480px){.bottom{left:10px;right:10px;padding:9px;bottom:calc(80px + env(safe-area-inset-bottom))!important}.bottom button{min-height:42px;font-size:12px}header{max-height:16dvh}}
 @media(max-height:560px){.bottom{bottom:calc(55px + env(safe-area-inset-bottom))!important;max-height:34dvh}.bottom #detail{max-height:9dvh}}
@@ -45,33 +52,77 @@ AFRAME.registerComponent('pulse-heart',{
 <a-entity id="target" mindar-image-target="targetIndex: 0">
 <!-- Educational 3D schematic anchored to the existing Skill 01 image target. -->
 <a-entity id="model" position="0 0 0.11" scale="0.48 0.48 0.48">
-  <a-sphere position="0 -0.04 0" scale="0.43 0.67 0.19" material="color:#f1c6b5;transparent:true;opacity:0.20;side:double;depthWrite:false"></a-sphere>
-  <a-sphere position="0 -0.37 0.02" scale="0.42 0.31 0.25" material="color:#f1c6b5;transparent:true;opacity:0.18;side:double;depthWrite:false"></a-sphere>
-  <a-entity id="organs">
-    <a-cylinder position="0 0.35 0.13" radius="0.025" height="0.18" color="#e4d8bd"></a-cylinder>
-    <a-sphere position="-0.16 0.15 0.17" scale="0.15 0.25 0.10" material="color:#f4a4b9;roughness:0.65"></a-sphere>
-    <a-sphere position="0.16 0.15 0.17" scale="0.15 0.25 0.10" material="color:#f4a4b9;roughness:0.65"></a-sphere>
-    <a-sphere id="heart" pulse-heart position="0.025 0.13 0.29" scale="0.085 0.115 0.08" color="#dc3056"></a-sphere>
-    <a-sphere position="0 -0.36 0.20" scale="0.30 0.24 0.17" material="color:#a54c75;roughness:0.55"></a-sphere>
-    <a-sphere position="0.02 -0.38 0.35" scale="0.105 0.13 0.065" color="#f4c4a0"></a-sphere>
-    <a-torus position="0 0.15 0.24" radius="0.32" radius-tubular="0.006" color="#9ce9ff" opacity="0.65"></a-torus>
-  </a-entity>
-  <a-text value="LUNGS" position="-0.34 0.43 0.32" width="0.85" color="#c8f2ff" align="center" side="double"></a-text>
-  <a-text value="HEART" position="0.32 0.28 0.38" width="0.75" color="#ffe1e7" align="center" side="double"></a-text>
-  <a-text value="UTERUS" position="-0.33 -0.54 0.33" width="0.85" color="#ffd4e9" align="center" side="double"></a-text>
-  <a-text value="SCHEMATIC" position="0 -0.75 0.25" width="1.5" align="center" color="#ffffff" side="double"></a-text>
+<a-entity id="visuals">
+<!-- Each visual is a separate animated educational scene; switching is controlled by render(). -->
+<!-- Step 1: hazard scene -->
+<a-entity id="visual-0" visible="true">
+<a-plane position="0 -0.45 0" width="1.45" height=".55" color="#123b4b" opacity=".75"></a-plane>
+<a-box position="-.40 -.23 .10" width=".22" height=".23" depth=".12" color="#edb54e" animation="property:rotation;to:0 0 6;dir:alternate;dur:900;loop:true"></a-box>
+<a-text value="!" position="-.46 -.28 .20" width=".8" color="#152535"></a-text>
+<a-torus position=".35 -.17 .15" radius=".16" radius-tubular=".018" color="#ff6e75" animation="property:scale;from:1 1 1;to:1.18 1.18 1;dir:alternate;dur:900;loop:true"></a-torus>
+<a-text value="SAFETY CHECK" position="0 .30 .16" width="1.65" align="center" color="#ffffff"></a-text>
+<a-text value="Scan for hazards" position="0 .12 .16" width="1.4" align="center" color="#9ef3ff"></a-text>
+</a-entity>
+<!-- Step 2: PPE -->
+<a-entity id="visual-1" visible="false">
+<a-sphere position="-.30 0 .12" scale=".20 .31 .10" color="#65cbe8"></a-sphere>
+<a-sphere position=".30 0 .12" scale=".20 .31 .10" color="#65cbe8"></a-sphere>
+<a-box position="0 .06 .22" width=".30" height=".19" depth=".06" color="#f1f8fc"></a-box>
+<a-text value="GLOVES + MASK" position="0 .45 .12" width="1.65" align="center" color="#ffffff"></a-text>
+<a-ring position="0 .06 .29" radius-inner=".26" radius-outer=".28" color="#51e6c5" animation="property:rotation;to:0 0 360;dur:5000;loop:true;easing:linear"></a-ring>
+</a-entity>
+<!-- Step 3: responsiveness -->
+<a-entity id="visual-2" visible="false">
+<a-sphere position="0 .12 .03" scale=".20 .24 .16" color="#e5b49e"></a-sphere>
+<a-box position="0 -.26 .03" width=".64" height=".44" depth=".18" color="#7fabc0"></a-box>
+<a-sphere position="-.34 -.09 .18" radius=".085" color="#ffdd78" animation="property:position;from:-.43 -.09 .18;to:-.29 -.09 .18;dir:alternate;dur:650;loop:true"></a-sphere>
+<a-sphere position=".34 -.09 .18" radius=".085" color="#ffdd78" animation="property:position;from:.43 -.09 .18;to:.29 -.09 .18;dir:alternate;dur:650;loop:true"></a-sphere>
+<a-text value="ARE YOU OKAY?" position="0 .51 .12" width="1.65" align="center" color="#ffffff"></a-text>
+<a-text value="Tap shoulders + call" position="0 -.62 .12" width="1.55" align="center" color="#9ef3ff"></a-text>
+</a-entity>
+<!-- Step 4: help -->
+<a-entity id="visual-3" visible="false">
+<a-box position="0 0 .12" width=".48" height=".65" depth=".12" color="#2b667e"></a-box>
+<a-box position="0 0 .20" width=".34" height=".40" depth=".02" color="#d9f4fa"></a-box>
+<a-text value="SOS" position="0 0 .24" width="1.1" align="center" color="#bb283f"></a-text>
+<a-torus position="0 0 .16" radius=".44" radius-tubular=".016" color="#ff646e" animation="property:scale;from:.8 .8 1;to:1.15 1.15 1;dir:alternate;dur:800;loop:true"></a-torus>
+<a-text value="ACTIVATE RESPONSE" position="0 .53 .12" width="1.8" align="center" color="#ffffff"></a-text>
+<a-text value="Call team + AED" position="0 -.53 .12" width="1.55" align="center" color="#9ef3ff"></a-text>
+</a-entity>
+<!-- Step 5: maternal anatomy schematic -->
+<a-entity id="visual-4" visible="false">
+<a-sphere position="0 -.05 0" scale=".40 .65 .23" material="color:#e5b69e;transparent:true;opacity:.24;side:double"></a-sphere>
+<a-sphere position="-.15 .15 .18" scale=".14 .22 .09" color="#efa4b3"></a-sphere>
+<a-sphere position=".15 .15 .18" scale=".14 .22 .09" color="#efa4b3"></a-sphere>
+<a-sphere position="0 .13 .28" scale=".08 .10 .08" color="#d93e60" animation="property:scale;from:.08 .10 .08;to:.09 .11 .09;dir:alternate;dur:480;loop:true"></a-sphere>
+<a-sphere position="0 -.30 .20" scale=".30 .26 .18" color="#a45786"></a-sphere>
+<a-sphere position=".03 -.32 .36" scale=".11 .13 .08" color="#f0c19d"></a-sphere>
+<a-text value="MATERNAL ANATOMY" position="0 .68 .12" width="1.9" align="center" color="#ffffff"></a-text>
+<a-text value="Illustrative only" position="0 -.70 .12" width="1.4" align="center" color="#9ef3ff"></a-text>
+</a-entity>
+<!-- Step 6: rescuer position -->
+<a-entity id="visual-5" visible="false">
+<a-box position="0 -.12 0" width=".68" height=".72" depth=".17" color="#7fabc0"></a-box>
+<a-sphere position="0 .38 0" radius=".17" color="#e7b9a3"></a-sphere>
+<a-cylinder position="-.62 -.22 .15" radius=".10" height=".54" color="#64d4f2"></a-cylinder>
+<a-sphere position="-.62 .13 .15" radius=".14" color="#64d4f2"></a-sphere>
+<a-cone position="-.32 -.23 .18" radius-bottom=".10" radius-top="0" height=".25" rotation="0 0 -90" color="#ffe077" animation="property:position;from:-.42 -.23 .18;to:-.29 -.23 .18;dir:alternate;dur:950;loop:true"></a-cone>
+<a-text value="POSITION BESIDE PATIENT" position="0 .69 .12" width="2.1" align="center" color="#ffffff"></a-text>
+</a-entity>
+</a-entity>
 </a-entity>
 </a-entity>
 </a-scene>
-<div class="panel bottom"><div class="progress"><span id="progress"></span></div><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide anatomy</button></div></div>
+<div class="visual-hud" aria-live="polite"><span id="step-counter">SCENE 01 / 06</span><strong id="visual-caption">HAZARD RECOGNITION</strong><small>Animated educational illustration · Not anatomical scale</small></div>
+<div class="panel bottom"><div class="progress"><span id="progress"></span></div><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide 3D</button></div></div>
 <script>
 const steps=[
- {title:'Ensure scene safety',action:'Survey the area for electrical, environmental, and equipment hazards before approaching.',why:'A safe scene protects the patient and the response team. This is a preparation step; internal anatomy is shown only as contextual orientation.',focus:'overview'},
- {title:'Wear PPE',action:'Apply appropriate personal protective equipment according to local infection-prevention policy.',why:'Barrier precautions reduce exposure risks. Use available PPE without unnecessarily delaying time-critical resuscitation.',focus:'overview'},
- {title:'Assess responsiveness',action:'Gently tap the shoulders and speak loudly: “Are you okay?” Check for a response.',why:'Unresponsiveness is a critical warning sign requiring rapid emergency assessment. The heart and lungs are highlighted as the organs at risk if circulation and breathing fail.',focus:'thorax'},
- {title:'Call for immediate help',action:'Activate the emergency response system and summon the resuscitation team and equipment.',why:'Early coordinated response is essential in maternal collapse. Pregnancy requires additional planning for maternal and fetal needs.',focus:'all'},
- {title:'Verify identity and readiness',action:'Confirm identity only when feasible without delaying care; check that maternal-resuscitation resources and personnel are being mobilized.',why:'Pregnancy changes anatomy and physiology, including potential compression of major vessels by the enlarged uterus. This diagram is illustrative, not patient-specific.',focus:'uterus'},
- {title:'Position yourself for CPR',action:'Move alongside the patient and prepare to perform the next indicated resuscitation actions on a firm surface.',why:'Correct positioning supports effective chest compressions. For a pregnant patient, trained team members should plan pregnancy-specific modifications as indicated by the clinical protocol.',focus:'thorax'}
+ {title:'Ensure scene safety',action:'Survey the area for electrical, environmental, and equipment hazards before approaching.',why:'A safe scene protects the patient and the response team. This is a preparation step; internal anatomy is shown only as contextual orientation.',visual:'HAZARD RECOGNITION'},
+ {title:'Wear PPE',action:'Apply appropriate personal protective equipment according to local infection-prevention policy.',why:'Barrier precautions reduce exposure risks. Use available PPE without unnecessarily delaying time-critical resuscitation.',visual:'PERSONAL PROTECTION'},
+ {title:'Assess responsiveness',action:'Gently tap the shoulders and speak loudly: “Are you okay?” Check for a response.',why:'Unresponsiveness is a critical warning sign requiring rapid emergency assessment. The heart and lungs are highlighted as the organs at risk if circulation and breathing fail.',visual:'RESPONSE ASSESSMENT'},
+ {title:'Call for immediate help',action:'Activate the emergency response system and summon the resuscitation team and equipment.',why:'Early coordinated response is essential in maternal collapse. Pregnancy requires additional planning for maternal and fetal needs.',visual:'EMERGENCY ACTIVATION'},
+ {title:'Verify identity and readiness',action:'Confirm identity only when feasible without delaying care; check that maternal-resuscitation resources and personnel are being mobilized.',why:'Pregnancy changes anatomy and physiology, including potential compression of major vessels by the enlarged uterus. This diagram is illustrative, not patient-specific.',visual:'MATERNAL CONSIDERATIONS'},
+ {title:'Position yourself for CPR',action:'Move alongside the patient and prepare to perform the next indicated resuscitation actions on a firm surface.',why:'Correct positioning supports effective chest compressions. For a pregnant patient, trained team members should plan pregnancy-specific modifications as indicated by the clinical protocol.',visual:'RESCUER POSITIONING'}
 ];
 let idx=0,visible=true,tracked=false;const $=id=>document.getElementById(id);
 function render(){
@@ -85,9 +136,11 @@ function render(){
  }
  $('progress').style.width=((idx+1)/6*100)+'%';
  $('prev').disabled=idx===0;$('next').disabled=idx===5;
- $('anatomy').textContent=visible?'Hide anatomy':'Show anatomy';
- const organs=$('organs'); if(organs)organs.setAttribute('visible',visible);
- const heart=$('heart'); if(heart)heart.setAttribute('color',st.focus==='thorax'?'#ff3864':'#dc3056');
+ $('anatomy').textContent=visible?'Hide 3D':'Show 3D';
+ for(let i=0;i<6;i++){const v=$('visual-'+i);if(v)v.setAttribute('visible',visible && i===idx)}
+ $('visual-caption').textContent=st.visual;
+ $('step-counter').textContent=`SCENE ${String(idx+1).padStart(2,'0')} / 06`;
+ $('detail').scrollTop=0;
 }
 $('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};
 $('next').onclick=()=>{idx=Math.min(5,idx+1);render()};
