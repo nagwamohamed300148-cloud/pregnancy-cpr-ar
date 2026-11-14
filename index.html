@@ -7,20 +7,20 @@
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;color:#fff;font:14px Arial,sans-serif}
+html,body{margin:0;width:100%;height:var(--screen-h,100dvh);overflow:hidden;background:transparent;color:#fff;font:14px Arial,sans-serif}
 .panel{position:fixed;z-index:20;left:10px;right:10px;background:rgba(5,24,44,.87);border:1px solid #39c9e9;border-radius:12px;padding:10px;box-shadow:0 3px 12px #0005;overflow-wrap:anywhere}
-header{top:calc(8px + env(safe-area-inset-top));max-height:22vh;overflow:auto}
-header strong{display:block;font-size:clamp(12px,3.3vw,16px);line-height:1.3}
+header{top:calc(6px + env(safe-area-inset-top));max-height:18dvh;overflow:auto}
+header strong{display:block;overflow-wrap:anywhere;white-space:normal;font-size:clamp(12px,3.3vw,16px);line-height:1.3}
 header small{display:block;margin-top:4px;color:#b5eafa;font-size:12px}
 #status{font-size:11px;color:#9fe5f5;margin-top:5px}
-.bottom{bottom:calc(8px + env(safe-area-inset-bottom));max-height:30vh;overflow:auto}
+.bottom{position:fixed!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;top:auto!important;max-height:34dvh;overflow:auto;z-index:99999!important}
 #step{font-weight:bold;font-size:14px;margin-bottom:5px}
 #detail{font-size:12px;line-height:1.35;color:#d5e9f3;max-height:12vh;overflow:auto}
 .buttons{display:flex;gap:6px;margin-top:8px}
 button{flex:1;min-width:0;padding:10px 2px;border:0;border-radius:8px;background:#14b9dc;color:#041725;font-size:12px;font-weight:bold}
 button:disabled{opacity:.4}button.secondary{background:#d6eaf2}
 #notice{position:fixed;top:25%;left:15px;right:15px;text-align:center;color:#fff;text-shadow:0 2px 5px #000;z-index:15;pointer-events:none;font-size:12px}
-a-scene{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;background:transparent!important}
+a-scene{position:fixed!important;inset:0!important;width:100%!important;height:var(--screen-h,100dvh)!important;z-index:0!important;background:transparent!important}
 a-scene canvas{background:transparent!important}
 </style>
 <script>
@@ -69,6 +69,7 @@ const steps=[
 let idx=0,visible=true,tracked=false;const $=id=>document.getElementById(id);
 function render(){$('step').textContent=`${idx+1}/6 — ${steps[idx][0]}`;$('detail').textContent=steps[idx][1];$('prev').disabled=idx===0;$('next').disabled=idx===5;$('anatomy').textContent=visible?'Hide anatomy':'Show anatomy'}
 $('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};$('next').onclick=()=>{idx=Math.min(5,idx+1);render()};$('anatomy').onclick=()=>{visible=!visible;$('organs').setAttribute('visible',visible);render()};render();
+function syncViewport(){document.documentElement.style.setProperty('--screen-h',window.visualViewport?window.visualViewport.height+'px':window.innerHeight+'px')}syncViewport();window.addEventListener('resize',syncViewport);if(window.visualViewport)window.visualViewport.addEventListener('resize',syncViewport);
 const scene=document.querySelector('a-scene');
 scene.addEventListener('loaded',()=>{$('status').textContent='3D scene loaded — starting camera…'});
 scene.addEventListener('arReady',()=>{$('status').textContent='Camera ready — scan Skill 01 marker'});
