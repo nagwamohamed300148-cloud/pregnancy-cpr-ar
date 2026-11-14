@@ -25,6 +25,8 @@ a-scene canvas{background:transparent!important}
 .bottom,.bottom *{visibility:visible!important}
 .bottom button{position:relative;z-index:2;pointer-events:auto!important}
 @media(max-height:650px){.bottom{padding:7px!important;max-height:34vh}.bottom #detail{max-height:11vh}.bottom button{padding:8px 2px}}
+/* Visual scene 6 includes a real GLB mannequin model. */
+#asset-status{font-size:10px;color:#b6ecff;margin-top:3px}
 /* AR visual HUD is informational; never intercept camera gestures. */
 .visual-hud{position:fixed;z-index:30;left:50%;transform:translateX(-50%);top:calc(100px + env(safe-area-inset-top));width:min(78vw,350px);pointer-events:none;text-align:center;background:rgba(5,24,44,.76);border:1px solid rgba(89,216,235,.7);border-radius:12px;padding:7px 9px;box-shadow:0 5px 18px #0006}
 .visual-hud span{display:block;color:#8eeaff;font-size:10px;letter-spacing:2px}.visual-hud strong{display:block;font-size:12px;margin-top:3px}.visual-hud small{display:block;font-size:9px;color:#c2d9e4;margin-top:3px}
@@ -44,7 +46,7 @@ AFRAME.registerComponent('pulse-heart',{
 </script>
 </head>
 <body>
-<header class="panel"><strong>PREGNANCY CPR · AR CLINICAL TRAINING</strong><small>Skill 01 — Pre-Procedure Activities</small><div id="status">Loading AR…</div></header>
+<header class="panel"><strong>PREGNANCY CPR · AR CLINICAL TRAINING</strong><small>Skill 01 — Pre-Procedure Activities</small><div id="status">Loading AR…</div><div id="asset-status">Training mannequin: loading 3D asset…</div></header>
 <div id="notice">Point camera at the exact Skill 01 image used to create targets.mind</div>
 
 <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes" color-space="sRGB" renderer="colorManagement: true; antialias: true; alpha: true" background="color: #000000; transparent: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
@@ -102,6 +104,9 @@ AFRAME.registerComponent('pulse-heart',{
 </a-entity>
 <!-- Step 6: rescuer position -->
 <a-entity id="visual-5" visible="false">
+<!-- Actual uploaded training mannequin GLB; fallback primitives remain if the asset is not loaded. -->
+<a-entity id="training-mannequin" gltf-model="url(./training_mannequin.glb)" position="0 -0.02 0.12" rotation="0 0 0" scale="0.52 0.52 0.52" visible="false"></a-entity>
+<a-entity id="mannequin-fallback">
 <a-box position="0 -.12 0" width=".68" height=".72" depth=".17" color="#7fabc0"></a-box>
 <a-sphere position="0 .38 0" radius=".17" color="#e7b9a3"></a-sphere>
 <a-cylinder position="-.62 -.22 .15" radius=".10" height=".54" color="#64d4f2"></a-cylinder>
@@ -112,8 +117,9 @@ AFRAME.registerComponent('pulse-heart',{
 </a-entity>
 </a-entity>
 </a-entity>
+</a-entity>
 </a-scene>
-<div class="visual-hud" aria-live="polite"><span id="step-counter">SCENE 01 / 06</span><strong id="visual-caption">HAZARD RECOGNITION</strong><small>Animated educational illustration · Not anatomical scale</small></div>
+<div class="visual-hud" aria-live="polite"><span id="step-counter">SCENE 01 / 06</span><strong id="visual-caption">HAZARD RECOGNITION</strong><small>Interactive 3D learning · Illustrations are not clinical anatomy</small></div>
 <div class="panel bottom"><div class="progress"><span id="progress"></span></div><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide 3D</button></div></div>
 <script>
 const steps=[
@@ -145,6 +151,18 @@ function render(){
 $('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};
 $('next').onclick=()=>{idx=Math.min(5,idx+1);render()};
 $('anatomy').onclick=()=>{visible=!visible;render()};render();
+// Keep the simplified fallback visible unless the actual GLB finishes loading.
+const mannequin=$('training-mannequin');
+if(mannequin){
+ mannequin.addEventListener('model-loaded',()=>{
+  mannequin.setAttribute('visible',true);
+  $('mannequin-fallback').setAttribute('visible',false);
+  $('asset-status').textContent='Training mannequin: 3D asset loaded';
+ });
+ mannequin.addEventListener('model-error',()=>{
+  $('asset-status').textContent='Training mannequin unavailable — simplified illustration shown';
+ });
+}
 function syncViewport(){document.documentElement.style.setProperty('--screen-h',window.innerHeight+'px')}syncViewport();window.addEventListener('resize',syncViewport);if(window.visualViewport)window.visualViewport.addEventListener('resize',syncViewport);
 const scene=document.querySelector('a-scene');
 scene.addEventListener('loaded',()=>{$('status').textContent='3D scene loaded — starting camera…'});
