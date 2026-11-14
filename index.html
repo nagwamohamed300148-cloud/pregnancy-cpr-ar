@@ -13,9 +13,9 @@ header{top:calc(6px + env(safe-area-inset-top));max-height:18dvh;overflow:auto}
 header strong{display:block;overflow-wrap:anywhere;white-space:normal;font-size:clamp(12px,3.3vw,16px);line-height:1.3}
 header small{display:block;margin-top:4px;color:#b5eafa;font-size:12px}
 #status{font-size:11px;color:#9fe5f5;margin-top:5px}
-.bottom{position:fixed!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;top:auto!important;max-height:34dvh;overflow:auto;z-index:99999!important}
+.bottom{position:fixed!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;top:auto!important;max-height:40dvh;overflow:auto;z-index:99999!important}
 #step{font-weight:bold;font-size:14px;margin-bottom:5px}
-#detail{font-size:12px;line-height:1.35;color:#d5e9f3;max-height:12vh;overflow:auto}
+#detail{font-size:12px;line-height:1.45;color:#d5e9f3;max-height:22vh;overflow:auto} .kicker{font-weight:700;color:#74e1fa;margin:6px 0 2px}.progress{height:4px;background:#26485b;border-radius:8px;margin-bottom:8px}.progress span{display:block;height:100%;background:#30d5e8;border-radius:8px;transition:width .2s} .buttons button{touch-action:manipulation} #notice{max-height:5vh;overflow:hidden}
 .buttons{display:flex;gap:6px;margin-top:8px}
 button{flex:1;min-width:0;padding:10px 2px;border:0;border-radius:8px;background:#14b9dc;color:#041725;font-size:12px;font-weight:bold}
 button:disabled{opacity:.4}button.secondary{background:#d6eaf2}
@@ -33,7 +33,7 @@ AFRAME.registerComponent('pulse-heart',{
 <body>
 <header class="panel"><strong>PREGNANCY CPR · AR CLINICAL TRAINING</strong><small>Skill 01 — Pre-Procedure Activities</small><div id="status">Loading AR…</div></header>
 <div id="notice">Point camera at the exact Skill 01 image used to create targets.mind</div>
-<div class="panel bottom"><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide anatomy</button></div></div>
+<div class="panel bottom"><div class="progress"><span id="progress"></span></div><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide anatomy</button></div></div>
 <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes" color-space="sRGB" renderer="colorManagement: true; antialias: true; alpha: true" background="color: #000000; transparent: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
 <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 <a-entity id="target" mindar-image-target="targetIndex: 0">
@@ -59,16 +59,32 @@ AFRAME.registerComponent('pulse-heart',{
 </a-scene>
 <script>
 const steps=[
-['Ensure scene safety','Check for environmental hazards before approaching the patient.'],
-['Wear PPE','Put on appropriate personal protective equipment and barriers.'],
-['Assess responsiveness','Tap the patient’s shoulders and ask loudly: “Are you okay?”'],
-['Call for immediate help','Recognize unresponsiveness and summon nearby assistance promptly.'],
-['Verify identity and readiness','Verify patient identity when feasible and assess maternal resuscitation readiness without delaying emergency response.'],
-['Position yourself for CPR','Move alongside the patient, ready to begin the next indicated resuscitation actions.']
+ {title:'Ensure scene safety',action:'Survey the area for electrical, environmental, and equipment hazards before approaching.',why:'A safe scene protects the patient and the response team. This is a preparation step; internal anatomy is shown only as contextual orientation.',focus:'overview'},
+ {title:'Wear PPE',action:'Apply appropriate personal protective equipment according to local infection-prevention policy.',why:'Barrier precautions reduce exposure risks. Use available PPE without unnecessarily delaying time-critical resuscitation.',focus:'overview'},
+ {title:'Assess responsiveness',action:'Gently tap the shoulders and speak loudly: “Are you okay?” Check for a response.',why:'Unresponsiveness is a critical warning sign requiring rapid emergency assessment. The heart and lungs are highlighted as the organs at risk if circulation and breathing fail.',focus:'thorax'},
+ {title:'Call for immediate help',action:'Activate the emergency response system and summon the resuscitation team and equipment.',why:'Early coordinated response is essential in maternal collapse. Pregnancy requires additional planning for maternal and fetal needs.',focus:'all'},
+ {title:'Verify identity and readiness',action:'Confirm identity only when feasible without delaying care; check that maternal-resuscitation resources and personnel are being mobilized.',why:'Pregnancy changes anatomy and physiology, including potential compression of major vessels by the enlarged uterus. This diagram is illustrative, not patient-specific.',focus:'uterus'},
+ {title:'Position yourself for CPR',action:'Move alongside the patient and prepare to perform the next indicated resuscitation actions on a firm surface.',why:'Correct positioning supports effective chest compressions. For a pregnant patient, trained team members should plan pregnancy-specific modifications as indicated by the clinical protocol.',focus:'thorax'}
 ];
 let idx=0,visible=true,tracked=false;const $=id=>document.getElementById(id);
-function render(){$('step').textContent=`${idx+1}/6 — ${steps[idx][0]}`;$('detail').textContent=steps[idx][1];$('prev').disabled=idx===0;$('next').disabled=idx===5;$('anatomy').textContent=visible?'Hide anatomy':'Show anatomy'}
-$('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};$('next').onclick=()=>{idx=Math.min(5,idx+1);render()};$('anatomy').onclick=()=>{visible=!visible;$('organs').setAttribute('visible',visible);render()};render();
+function render(){
+ const st=steps[idx];
+ $('step').textContent=`${idx+1}/6 — ${st.title}`;
+ $('detail').innerHTML='';
+ for(const [label,value] of [['STUDENT ACTION',st.action],['WHY IT MATTERS',st.why]]){
+   const h=document.createElement('div');h.className='kicker';h.textContent=label;
+   const t=document.createElement('div');t.textContent=value;
+   $('detail').append(h,t);
+ }
+ $('progress').style.width=((idx+1)/6*100)+'%';
+ $('prev').disabled=idx===0;$('next').disabled=idx===5;
+ $('anatomy').textContent=visible?'Hide anatomy':'Show anatomy';
+ const organs=$('organs'); if(organs)organs.setAttribute('visible',visible);
+ const heart=$('heart'); if(heart)heart.setAttribute('color',st.focus==='thorax'?'#ff3864':'#dc3056');
+}
+$('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};
+$('next').onclick=()=>{idx=Math.min(5,idx+1);render()};
+$('anatomy').onclick=()=>{visible=!visible;render()};render();
 function syncViewport(){document.documentElement.style.setProperty('--screen-h',window.visualViewport?window.visualViewport.height+'px':window.innerHeight+'px')}syncViewport();window.addEventListener('resize',syncViewport);if(window.visualViewport)window.visualViewport.addEventListener('resize',syncViewport);
 const scene=document.querySelector('a-scene');
 scene.addEventListener('loaded',()=>{$('status').textContent='3D scene loaded — starting camera…'});
