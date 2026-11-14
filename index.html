@@ -37,6 +37,16 @@ a-scene canvas{background:transparent!important}
 /* Keep the control bar above mobile browser navigation, while retaining a scrollable description. */
 @media(max-width:480px){.bottom{left:10px;right:10px;padding:9px;bottom:calc(80px + env(safe-area-inset-bottom))!important}.bottom button{min-height:42px;font-size:12px}header{max-height:16dvh}}
 @media(max-height:560px){.bottom{bottom:calc(55px + env(safe-area-inset-bottom))!important;max-height:34dvh}.bottom #detail{max-height:9dvh}}
+
+/* Explicit viewport bounds; controls are independent of description scrolling. */
+header.panel{left:8px!important;right:auto!important;width:calc(var(--vw,100vw) - 16px)!important;top:8px!important;max-height:90px;overflow:hidden}
+.visual-hud{left:8px!important;right:auto!important;transform:none!important;width:calc(var(--vw,100vw) - 16px)!important;top:100px!important}
+.bottom.panel{left:8px!important;right:auto!important;width:calc(var(--vw,100vw) - 16px)!important;top:auto!important;bottom:auto!important;max-height:none!important;height:auto!important;transform:none!important;padding:8px!important;overflow:hidden!important;background:#071d30ed}
+.bottom #detail{max-height:70px!important;overflow:auto!important;flex:none!important;font-size:11px}
+.bottom .buttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;flex:none!important}
+.bottom .buttons button{min-height:44px!important}
+#visual-guide{display:flex;gap:6px;align-items:center;margin:4px 0;background:#15394d;border-radius:7px;padding:5px;font-size:11px;line-height:1.3}
+#visual-guide svg{width:94px;height:58px;flex:none} #notice{display:none}
 </style>
 <script>
 AFRAME.registerComponent('pulse-heart',{
@@ -120,7 +130,7 @@ AFRAME.registerComponent('pulse-heart',{
 </a-entity>
 </a-scene>
 <div class="visual-hud" aria-live="polite"><span id="step-counter">SCENE 01 / 06</span><strong id="visual-caption">HAZARD RECOGNITION</strong><small>Interactive 3D learning · Illustrations are not clinical anatomy</small></div>
-<div class="panel bottom"><div class="progress"><span id="progress"></span></div><div id="step"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide 3D</button></div></div>
+<div class="panel bottom"><div class="progress"><span id="progress"></span></div><div id="step"></div><div id="visual-guide"></div><div id="detail"></div><div class="buttons"><button id="prev" class="secondary">Previous</button><button id="next">Next</button><button id="anatomy" class="secondary">Hide 3D</button></div></div>
 <script>
 const steps=[
  {title:'Ensure scene safety',action:'Survey the area for electrical, environmental, and equipment hazards before approaching.',why:'A safe scene protects the patient and the response team. This is a preparation step; internal anatomy is shown only as contextual orientation.',visual:'HAZARD RECOGNITION'},
@@ -130,6 +140,13 @@ const steps=[
  {title:'Verify identity and readiness',action:'Confirm identity only when feasible without delaying care; check that maternal-resuscitation resources and personnel are being mobilized.',why:'Pregnancy changes anatomy and physiology, including potential compression of major vessels by the enlarged uterus. This diagram is illustrative, not patient-specific.',visual:'MATERNAL CONSIDERATIONS'},
  {title:'Position yourself for CPR',action:'Move alongside the patient and prepare to perform the next indicated resuscitation actions on a firm surface.',why:'Correct positioning supports effective chest compressions. For a pregnant patient, trained team members should plan pregnancy-specific modifications as indicated by the clinical protocol.',visual:'RESCUER POSITIONING'}
 ];
+const guides=[
+['Check surroundings','<path d="M16 48L37 8 58 48Z" fill="#ffd26b"/><path d="M37 20v13m0 5v2" stroke="#132a38" stroke-width="4"/><path d="M68 16h30v30H68z" fill="none" stroke="#83e4ed" stroke-width="3"/><path d="M74 31l7 7 12-15" fill="none" stroke="#83e4ed" stroke-width="3"/>'],
+['Use appropriate barriers','<path d="M12 31l12-9 8 3 7-15 5 2-1 15 7-12 5 3-5 21-9 12-16-3z" fill="#6bd6e9"/><path d="M66 23q18-8 34 0v18q-18 12-34 0z" fill="#d7eef5"/><path d="M67 25q-12-12-12 8t12 7m33-15q12-12 12 8t-12 7" stroke="#b6d9e5" fill="none"/>'],
+['Tap both shoulders; call aloud','<circle cx="55" cy="12" r="9" fill="#edbfa9"/><path d="M35 27q20-12 40 0l7 26H28z" fill="#5caabd"/><circle cx="34" cy="28" r="6" fill="#ffd26b"/><circle cx="76" cy="28" r="6" fill="#ffd26b"/><path d="M14 28h12m70 0H84" stroke="#ffd26b" stroke-width="4"/>'],
+['Activate emergency response','<rect x="16" y="7" width="29" height="46" rx="5" fill="#d9eef5"/><text x="30" y="34" font-size="11" text-anchor="middle" fill="#bd3047">SOS</text><rect x="61" y="15" width="42" height="36" rx="5" fill="#63c8d7"/><text x="82" y="38" font-size="13" text-anchor="middle" fill="#092638">AED</text>'],
+['Prepare maternal resources','<path d="M48 5q-19 15-13 30t-2 20h45q3-12-7-20T57 5z" fill="#e8bfa9"/><ellipse cx="64" cy="40" rx="17" ry="13" fill="#b95d88"/><path d="M83 24h20m-10-10v20" stroke="#8ce8e5" stroke-width="4"/>'],
+['Position beside patient','<rect x="9" y="35" width="99" height="14" rx="3" fill="#52798c"/><circle cx="24" cy="29" r="8" fill="#efbea6"/><path d="M33 29h56" stroke="#efbea6" stroke-width="13" stroke-linecap="round"/><circle cx="60" cy="9" r="7" fill="#69d8e5"/><path d="M60 17v12" stroke="#69d8e5" stroke-width="8"/>']];
 let idx=0,visible=true,tracked=false;const $=id=>document.getElementById(id);
 function render(){
  const st=steps[idx];
@@ -147,6 +164,8 @@ function render(){
  $('visual-caption').textContent=st.visual;
  $('step-counter').textContent=`SCENE ${String(idx+1).padStart(2,'0')} / 06`;
  $('detail').scrollTop=0;
+ $('visual-guide').innerHTML='<svg viewBox="0 0 120 60" aria-hidden="true">'+guides[idx][1]+'</svg><span>'+guides[idx][0]+'</span>';
+ requestAnimationFrame(syncViewport);
 }
 $('prev').onclick=()=>{idx=Math.max(0,idx-1);render()};
 $('next').onclick=()=>{idx=Math.min(5,idx+1);render()};
@@ -163,12 +182,12 @@ if(mannequin){
   $('asset-status').textContent='Training mannequin unavailable — simplified illustration shown';
  });
 }
-function syncViewport(){document.documentElement.style.setProperty('--screen-h',window.innerHeight+'px')}syncViewport();window.addEventListener('resize',syncViewport);if(window.visualViewport)window.visualViewport.addEventListener('resize',syncViewport);
+function syncViewport(){const v=window.visualViewport;const w=v?v.width:window.innerWidth,h=v?v.height:window.innerHeight;document.documentElement.style.setProperty('--screen-h',h+'px');document.documentElement.style.setProperty('--vw',w+'px');const p=document.querySelector('.bottom');p.style.setProperty('top',Math.max(135,(v?v.offsetTop:0)+h-p.getBoundingClientRect().height-24)+'px','important')}syncViewport();window.addEventListener('resize',syncViewport);if(window.visualViewport)window.visualViewport.addEventListener('resize',syncViewport);
 const scene=document.querySelector('a-scene');
 scene.addEventListener('loaded',()=>{$('status').textContent='3D scene loaded — starting camera…'});
 scene.addEventListener('arReady',()=>{$('status').textContent='Camera ready — scan Skill 01 marker'});
 scene.addEventListener('arError',()=>{$('status').textContent='AR ERROR — camera, network, or tracking issue'});
-$('target').addEventListener('targetFound',()=>{tracked=true;$('notice').textContent='Marker detected — 3D schematic visible';$('status').textContent='Marker detected — anatomy schematic active';});
+$('target').addEventListener('targetFound',()=>{tracked=true;$('notice').textContent='Marker detected — 3D schematic visible';$('status').textContent='Marker detected — visual training active';});
 $('target').addEventListener('targetLost',()=>{tracked=false;$('notice').textContent='Point camera at Skill 01 marker';$('status').textContent='Marker not in view';});
 window.addEventListener('error',e=>{$('status').textContent='PAGE ERROR: '+String(e.message).slice(0,90)});
 </script>
